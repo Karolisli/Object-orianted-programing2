@@ -5,7 +5,8 @@ require '../bootloader.php';
 $nav = [
     'left' => [
         ['url' => '/', 'title' => 'Home'],
-        ['url' => 'register.php', 'title' => 'Regiser']
+        ['url' => 'register.php', 'title' => 'Regiser'],
+        ['url' => 'login.php', 'title' => 'Login'],
     ]
 ];
 

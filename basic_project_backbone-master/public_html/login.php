@@ -10,7 +10,7 @@ $nav = [
     ]
 ];
 
-$modelDrinks = new App\Drinks\Model();
+$modelDrinks = new App\User\Model();
 
 $thing = \App\App::$db->getData();
 var_dump($thing);
@@ -24,46 +24,29 @@ $form = [
         'method' => 'POST'
     ],
     'fields' => [
-        'name' => [
-            'label' => 'Gerimas',
-            'type' => 'text',
+        'password' => [
+            'label' => 'Password',
+            'type' => 'password',
+            'extra' => [
+                'validators' => [
+                    'validate_not_empty'
+                ]
+            ]
+        ],
+        'email' => [
+            'label' => 'Email',
+            'type' => 'email',
             'extra' => [
                 'validators' => [
                     'validate_not_empty',
-                ]
-            ]
-        ],
-        'amount_ml' => [
-            'label' => 'Kiekis ml',
-            'type' => 'number',
-            'extra' => [
-                'validators' => [
-                    'validate_not_empty'
-                ]
-            ]
-        ],
-        'abarot' => [
-            'label' => 'Stiprumas',
-            'type' => 'number',
-            'extra' => [
-                'validators' => [
-                    'validate_not_empty'
-                ]
-            ]
-        ],
-        'image' => [
-            'label' => 'Nuotrauka',
-            'type' => 'text',
-            'extra' => [
-                'validators' => [
-                    'validate_not_empty'
+                    'validate_email'
                 ]
             ]
         ],
     ],
     'buttons' => [
         'submit' => [
-            'title' => 'Itraukti',
+            'title' => 'Submit',
             'extra' => [
                 'attr' => [
                     'class' => 'blue-btn'
@@ -71,7 +54,7 @@ $form = [
             ]
         ],
         'delete' => [
-            'title' => 'Isgert visus',
+            'title' => 'Delete',
             'extra' => [
                 'attr' => [
                     'class' => 'blue-btn'
@@ -88,11 +71,21 @@ $form = [
 $filtered_input = get_form_input($form);
 
 function form_success($filtered_input, &$form, $modelDrinks) {
-    $modelDrinks->insert(new App\Drinks\Drink($filtered_input));
+    $_SESSION = $filtered_input;
 }
 
 function form_fail() {
     print 'fail';
+}
+
+function validate_email($filtered_input, &$field){
+    $modelUser = new App\User\Model();
+    $users = $modelUser->get (['email' => $filtered_input]);
+    if($users){
+        return false;
+    }
+    $field['error'] = 'Incorrect';
+    return true;
 }
 
 switch (get_form_action()) {
@@ -124,10 +117,7 @@ switch (get_form_action()) {
         </div>
         <?php foreach($drinks as $drink): ?>
         <div class='box'>
-            <h4><?php print 'Pavadinimas:'.' '. $drink->getName(); ?></h4>
-            <p><?php print 'Stiprumas:' .' '. $drink->getAbarot() .' '. '%'; ?></p>
-            <p><?php print 'Kiekis:' .' '. $drink->getAmount() .' '. 'ml'; ?></p>
-            <img src="<?php print $drink->getImage(); ?>">
+            <h3><?php print 'Welcome:'.' '. $drink->getName(); ?></h3>
         </div>    
         <?php endforeach; ?>
     </body>
