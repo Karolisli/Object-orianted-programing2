@@ -1,1 +1,1 @@
-{"drinks":[]}
+{"drinks":[],"user":[{"id":null,"name":"Karolis","email":"karolisliesys@gmail.com","password":"asdfghjkl"}]}
