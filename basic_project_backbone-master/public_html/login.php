@@ -4,9 +4,9 @@ require '../bootloader.php';
 
 $nav = [
     'left' => [
-        ['url' => '/', 'title' => 'Home'],
         ['url' => 'register.php', 'title' => 'Regiser'],
         ['url' => 'login.php', 'title' => 'Login'],
+        ['url' => 'logout.php', 'title' => 'Logout']
     ]
 ];
 
@@ -39,7 +39,7 @@ $form = [
             'extra' => [
                 'validators' => [
                     'validate_not_empty',
-                    'validate_email'
+                    // 'validate_login'
                 ]
             ]
         ],
@@ -52,41 +52,49 @@ $form = [
                     'class' => 'blue-btn'
                 ]
             ]
-        ],
-        'delete' => [
-            'title' => 'Delete',
-            'extra' => [
-                'attr' => [
-                    'class' => 'blue-btn'
-                ]
-            ]
         ]
     ],
     'callbacks' => [
         'success' => 'form_success',
         'fail' => 'form_fail'
     ],
+    'validarors' => [
+        'validate_login'
+    ]
 ];
 
 $filtered_input = get_form_input($form);
 
-function form_success($filtered_input, &$form, $modelDrinks) {
-    $_SESSION = $filtered_input;
-}
+session_start();
 
+function form_success($filtered_input, &$form) {
+    $_SESSION = $filtered_input;
+    $form['fields']['email']['error'] = 'Welcome';
+}
+var_dump($_SESSION);
 function form_fail() {
     print 'fail';
+    $form['fields']['email']['error'] = 'Wrong, try again';
 }
 
-function validate_email($filtered_input, &$field){
+
+function validate_login($filtered_input, &$form){
     $modelUser = new App\User\Model();
-    $users = $modelUser->get (['email' => $filtered_input]);
-    if($users){
+    $users = $modelUser->get ([
+        'email' => $filtered_input['email'],
+        'password' => $filtered_input['password']
+    ]);
+
+    if(empty($users)){
+        $form['fields']['password']['error'] = 'Loggin failed!';
         return false;
     }
-    $field['error'] = 'Incorrect';
+
     return true;
 }
+// var_dump($filtered_input['password']);
+
+// var_dump($form);
 
 switch (get_form_action()) {
     case 'submit':
@@ -115,10 +123,5 @@ switch (get_form_action()) {
         <div class="content">
             <?php require ROOT . '/core/templates/form/form.tpl.php'; ?>
         </div>
-        <?php foreach($drinks as $drink): ?>
-        <div class='box'>
-            <h3><?php print 'Welcome:'.' '. $drink->getName(); ?></h3>
-        </div>    
-        <?php endforeach; ?>
     </body>
 </html>
