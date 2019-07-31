@@ -2,18 +2,34 @@
 
 require '../bootloader.php';
 
+$wiskey = new \App\Drinks\StrongDrink();
+$wiskey->setAmount(700);
+$wiskey->drink();
+
+// var_dump('Wiskey'.' '.$wiskey->getAmount());
+
+$beer = new \App\Drinks\LightDrink();
+$beer->setAmount(1000);
+$beer->drink();
+
+// var_dump('Beer'.' '.$beer->getAmount());
+
+// die();
+
 $nav = [
     'left' => [
         ['url' => '/', 'title' => 'Home'],
-        ['url' => 'register.php', 'title' => 'Regiser'],
+        ['url' => 'register.php', 'title' => 'Register'],
         ['url' => 'login.php', 'title' => 'Login'],
+        ['url' => 'logout.php', 'title' => 'Logout'],
+        ['url' => 'drinks.php', 'title' => 'Drinks']
     ]
 ];
 
 $modelDrinks = new App\Drinks\Model();
 
 $thing = \App\App::$db->getData();
-var_dump($thing);
+// var_dump($thing);
 
 $db = new \Core\FileDB(DB_FILE);
 
@@ -122,13 +138,15 @@ switch (get_form_action()) {
         <div class="content">
             <?php require ROOT . '/core/templates/form/form.tpl.php'; ?>
         </div>
-        <?php foreach($drinks as $drink): ?>
+        <!-- <?php foreach($drinks as $drink): ?>
         <div class='box'>
             <h4><?php print 'Pavadinimas:'.' '. $drink->getName(); ?></h4>
             <p><?php print 'Stiprumas:' .' '. $drink->getAbarot() .' '. '%'; ?></p>
             <p><?php print 'Kiekis:' .' '. $drink->getAmount() .' '. 'ml'; ?></p>
-            <img src="<?php print $drink->getImage(); ?>">
+            <img src="<?php print $wiskey->getImage(); ?>">
         </div>    
-        <?php endforeach; ?>
+        <?php endforeach; ?> -->
+        <!-- <img src="<?php print $wiskey->getImage(); ?>">
+        <img src="<?php print $beer->getImage(); ?>"> -->
     </body>
 </html>
