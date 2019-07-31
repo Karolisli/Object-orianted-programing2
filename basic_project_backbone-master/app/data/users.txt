@@ -1,1 +1,1 @@
-{"drinks":[],"user":[{"id":null,"name":"Duff","email":"jamatajkc@gmail.com","password":"asd"}]}
+{"user":[{"id":null,"name":"Duff","email":"jamatajkc@gmail.com","password":"asd"},{"id":null,"name":"bananas","email":"karolisliesys@gmail.com","password":"bnm"}]}

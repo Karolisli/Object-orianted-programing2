@@ -57,10 +57,23 @@ function validate_form($filtered_input, &$form, $modelDrinks) {
             }
         }
     }
-
+    if (isset($form['validators'])) {
+        foreach ($form['validators'] as $validator_id => $validator) {
+            if (is_array($validator)) {
+                $is_valid = $validator_id($filtered_input, $form, $validator);
+            } else {
+                $is_valid = $validator($filtered_input, $form);
+            }
+            if (!$is_valid) {
+                $success = false;
+                break;
+            }
+        }
+    }
     if ($success) {
         if (isset($form['callbacks']['success'])) {
             $form['callbacks']['success']($filtered_input, $form, $modelDrinks);
+            // $form['callbacks']['success']($filtered_input, $form);
         }
     } else {
         if (isset($form['callbacks']['fail'])) {

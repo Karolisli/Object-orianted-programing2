@@ -13,7 +13,7 @@ $nav = [
 $modelDrinks = new App\User\Model();
 
 $thing = \App\App::$db->getData();
-var_dump($thing);
+// var_dump($thing);
 
 $db = new \Core\FileDB(DB_FILE);
 
@@ -58,7 +58,7 @@ $form = [
         'success' => 'form_success',
         'fail' => 'form_fail'
     ],
-    'validarors' => [
+    'validators' => [
         'validate_login'
     ]
 ];
@@ -71,10 +71,10 @@ function form_success($filtered_input, &$form) {
     $_SESSION = $filtered_input;
     $form['fields']['email']['error'] = 'Welcome';
 }
-var_dump($_SESSION);
+// var_dump($_SESSION);
 function form_fail() {
-    print 'fail';
-    $form['fields']['email']['error'] = 'Wrong, try again';
+    print 'Wrong, try again';
+    // $form['fields']['email']['error'] = 'Wrong, try again';
 }
 
 
@@ -86,7 +86,7 @@ function validate_login($filtered_input, &$form){
     ]);
 
     if(empty($users)){
-        $form['fields']['password']['error'] = 'Loggin failed!';
+        // $form['fields']['password']['error'] = 'Loggin failed!';
         return false;
     }
 

@@ -4,7 +4,6 @@ require '../bootloader.php';
 
 $nav = [
     'left' => [
-
         ['url' => 'register.php', 'title' => 'Regiser'],
         ['url' => 'login.php', 'title' => 'Login'],
         ['url' => 'logout.php', 'title' => 'Logout']
@@ -25,39 +24,12 @@ $form = [
         'method' => 'POST'
     ],
     'fields' => [
-        'name' => [
-            'label' => 'Name',
-            'type' => 'text',
-            'extra' => [
-                'validators' => [
-                    'validate_not_empty'
 
-                ]
-            ]
-        ],
-        'password' => [
-            'label' => 'Password',
-            'type' => 'password',
-            'extra' => [
-                'validators' => [
-                    'validate_not_empty'
-                ]
-            ]
-        ],
-        'email' => [
-            'label' => 'Email',
-            'type' => 'email',
-            'extra' => [
-                'validators' => [
-                    'validate_not_empty',
-                    'validate_email'
-                ]
-            ]
-        ],
     ],
     'buttons' => [
+
         'submit' => [
-            'title' => 'Submit',
+            'title' => 'Logout',
             'extra' => [
                 'attr' => [
                     'class' => 'blue-btn'
@@ -73,25 +45,15 @@ $form = [
 
 $filtered_input = get_form_input($form);
 
+session_start();
 function form_success($filtered_input, &$form, $modelDrinks) {
-    $User = new App\User\User($filtered_input);
-    $modelUsers = new App\User\Model();
-    $modelUsers->insert($User);
+    $_SESSION = [];
+    session_destroy();
 }
-
+// var_dump($_SESSION);
 function form_fail() {
-    print 'fail';
-}
-
-function validate_email($filtered_input, &$field){
-    $modelUser = new App\User\Model();
-    $users = $modelUser->get (['email' => $filtered_input]);
-    if($users){
-        $field['error'] = 'Toks jau yra';
-
-        return false;
-    }
-    return true;
+    $_SESSION = [];
+    session_destroy();
 }
 
 switch (get_form_action()) {
@@ -121,6 +83,6 @@ switch (get_form_action()) {
         <div class="content">
             <?php require ROOT . '/core/templates/form/form.tpl.php'; ?>
         </div>
-        
+
     </body>
 </html>
