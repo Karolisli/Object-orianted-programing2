@@ -32,7 +32,6 @@ class Drink {
         }
 
 
-
         $this->setName($array['name'] ?? null);
         $this->setAmount($array['amount_ml'] ?? null);
         $this->setAbarot($array['abarot'] ?? null);

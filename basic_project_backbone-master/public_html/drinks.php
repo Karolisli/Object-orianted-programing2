@@ -34,6 +34,49 @@ $db = new \Core\FileDB(DB_FILE);
 
 $drinks = $modelDrinks->get();
 
+$form = [
+    'attr' => [
+        'method' => 'POST'
+    ],
+    'fields' => [
+        'select' => [
+            'label' => 'Atsigerti',
+            'type' => 'select',
+            'options' => drink_options(),
+        ],
+    ],
+    'buttons' => [
+        'submit' => [
+            'title' => 'Drink',
+            'extra' => [
+                'attr' => [
+                    'class' => 'blue-btn'
+                ]
+            ]
+        ]
+    ],
+    'callbacks' => [
+        'success' => 'form_success',
+        'fail' => 'form_fail'
+    ],
+    'validators' => [
+        'validate_login'
+    ]
+];
+var_dump($drinks);
+
+function drink_options (){
+    $modelDrinks = new App\Drinks\Model();
+    $drinks = $modelDrinks->get();
+    $options = [];
+    foreach ($drinks as $drink){
+        $options[] = $drink->getName();
+    }
+    return $options;
+}
+
+
+
 function form_success($filtered_input, &$form, $modelDrinks) {
     $modelDrinks->insert(new App\Drinks\Drink($filtered_input));
 }
@@ -45,6 +88,7 @@ function form_fail() {
 switch (get_form_action()) {
     case 'submit':
         validate_form($filtered_input, $form, $modelDrinks);
+        
         break;
     case 'delete':
         foreach ($modelDrinks->get() as $drink) {
