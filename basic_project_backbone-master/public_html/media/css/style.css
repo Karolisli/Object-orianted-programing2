@@ -177,12 +177,14 @@ body {
 }
 
 img{
-    width: 100px;
+    height: 100px;
 }
 
-.box{
+.box_contents{
+    display: inline-block;
+    text-align: center;
     border: 1px solid black;
     width: 170px;
     padding:20px;
-    
+    margin: 5px;
 }
