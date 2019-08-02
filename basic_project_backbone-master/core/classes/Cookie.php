@@ -10,6 +10,7 @@ class Cookie extends Abstracts\Cookie {
 
     public function delete(): void {
         setcookie($this->name, null, -1, "/");
+        unset($_COOKIE[$this->name]);
     }
 
     public function exists(): bool {
