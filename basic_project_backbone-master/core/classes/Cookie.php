@@ -21,13 +21,14 @@ class Cookie extends Abstracts\Cookie {
     }
 
     public function read(): array {
-        $array = json_decode($_COOKIE[$this->name], true);
-
-        if (is_array($array)) {
-            return $array;
-        } else {
-            return trigger_error("That is not an array", E_USER_WARNING);
+        if ($this->exists()) {
+            $array = json_decode($_COOKIE[$this->name]);
+            if (is_array($array)) {
+                return $array;
+            }
+            trigger_error('That is not an array', E_USER_WARNING);
         }
+        return [];
     }
 
     public function save($data, $expires_in = 3600): void {
