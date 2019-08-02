@@ -20,7 +20,7 @@
                         <?php elseif ($field['type'] === 'select'): ?>
                             <?php require 'elements/select.tpl.php'; ?>
                         <?php endif; ?> 
-                        
+
                         <?php if (isset($field['label'])): ?>
                         </label>
                     <?php endif; ?>
@@ -44,7 +44,7 @@
                         <?php require 'elements/button.tpl.php'; ?>
                     <?php endforeach; ?>
                     <!--Button Generator End-->
-                    
+
                 </div>
             <?php endif; ?>
         </form>

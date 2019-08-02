@@ -4,7 +4,7 @@ namespace App\Drinks;
 
 class Drink {
 
-    public $data = [];
+    private $data = [];
 
     public function __construct($data = null) {
         if ($data) {
@@ -27,11 +27,9 @@ class Drink {
     public function setData($array) {
         if(isset($array['id'])){
             $this->setId($array['id']);
-        }else{
+        } else {
             $this->data['id'] = null;
         }
-
-
         $this->setName($array['name'] ?? null);
         $this->setAmount($array['amount_ml'] ?? null);
         $this->setAbarot($array['abarot'] ?? null);
@@ -48,7 +46,7 @@ class Drink {
             'name' => $this->getName(),
             'amount_ml' => $this->getAmount(),
             'abarot' => $this->getAbarot(),
-            'image' => $this->getImage(),
+            'image' => $this->getImage()
         ];
     }
 
@@ -119,14 +117,18 @@ class Drink {
     public function getImage() {
         return $this->data['image'];
     }
+    
     /**
-     * @param id $id
+     * 
+     * @param int $id
      */
     public function setId(int $id){
         $this->data['id'] = $id;
     }
+    
     /**
-     * @return int|null
+     * 
+     * @return mi
      */
     public function getId(){
         return $this->data['id'];

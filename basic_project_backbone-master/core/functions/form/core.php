@@ -32,12 +32,12 @@ function get_form_action() {
  * @param array $form
  * @return boolean
  */
-function validate_form($filtered_input, &$form, $modelDrinks) {
+function validate_form($filtered_input, &$form) {
     $success = true;
 
     foreach ($form['fields'] as $field_id => &$field) {
         $field_value = $filtered_input[$field_id];
-        
+
         // Set field value from submitted form, so the user
         // doesnt have to enter it again if form fails
         $field['value'] = $field_value;
@@ -57,23 +57,26 @@ function validate_form($filtered_input, &$form, $modelDrinks) {
             }
         }
     }
+
     if (isset($form['validators'])) {
         foreach ($form['validators'] as $validator_id => $validator) {
+//            var_dump($validator);
             if (is_array($validator)) {
                 $is_valid = $validator_id($filtered_input, $form, $validator);
             } else {
                 $is_valid = $validator($filtered_input, $form);
             }
+
             if (!$is_valid) {
                 $success = false;
                 break;
             }
         }
     }
+
     if ($success) {
         if (isset($form['callbacks']['success'])) {
-            $form['callbacks']['success']($filtered_input, $form, $modelDrinks);
-            // $form['callbacks']['success']($filtered_input, $form);
+            $form['callbacks']['success']($filtered_input, $form);
         }
     } else {
         if (isset($form['callbacks']['fail'])) {

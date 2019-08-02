@@ -1,44 +1,61 @@
-<?php 
-
+<?php
 namespace App\Drinks;
-
 use \App\App;
-
-class Model{
-    // private $db;
+class Model
+{
     private $table_name = 'drinks';
-    private $drink;
-
-    public function __construct(){
+    public function __construct()
+    {
         App::$db->createTable($this->table_name);
     }
-
-    public function insert(Drink $drink){
+    /** 2uzd turi irasyti $drink i duombaze
+     * @param Drink $drink
+     */
+    public function insert(Drink $drink)
+    {
         return App::$db->insertRow($this->table_name, $drink->getData());
     }
-
-    public function get($conditions = []){
+    /**
+     * 3uzd
+     * @param array $conditions
+     * @return Drink[]
+     */
+    public function get($conditions = [])
+    {
         $drinks = [];
         $rows = App::$db->getRowsWhere($this->table_name, $conditions);
-        foreach($rows as $row_id => $row_data){
+        foreach ($rows as $row_id => $row_data) {
             $row_data['id'] = $row_id;
-            $drinks[] = new Drink($row_data);
+//            $drinks[] = new Drink($row_data);
+            if ($row_data['abarot'] < 30){
+              $drinks[] = new LightDrink($row_data); 
+            }else{
+              $drinks[] = new StrongDrink($row_data);  
+            }
         }
         return $drinks;
     }
-
-    public function update(Drink $drink){
-        App::$db->updateRow($this->table_name, $drink->getId(), $drink->getData());
+    /**
+     * 4uzd
+     * @param Drink $drink
+     * @return bool
+     */
+    public function update(Drink $drink)
+    {
+        return App::$db->updateRow($this->table_name, $drink->getId(), $drink->getData());
     }
-
-    public function delete(Drink $drink){
-        App::$db->deleteRow($this->table_name, $drink->getId());
+    /**
+     * 5uzd
+     * @param Drink $drink
+     * @return bool
+     */
+    public function delete(Drink $drink)
+    {
+        return App::$db->deleteRow($this->table_name, $drink->getId());
     }
-
-    public function __destruct(){
+    public function __destruct()
+    {
         App::$db->save();
     }
-  
 }
-
 ?>

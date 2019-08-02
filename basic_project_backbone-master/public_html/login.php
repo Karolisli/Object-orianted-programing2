@@ -2,109 +2,80 @@
 
 require '../bootloader.php';
 
-$nav = [
-    'left' => [
-        ['url' => '/', 'title' => 'Home'],
-        ['url' => 'register.php', 'title' => 'Register'],
-        ['url' => 'login.php', 'title' => 'Login'],
-        ['url' => 'logout.php', 'title' => 'Logout'],
-        ['url' => 'drinks.php', 'title' => 'Drinks']
-    ]
-];
-
-$modelDrinks = new App\User\Model();
-
-$thing = \App\App::$db->getData();
-// var_dump($thing);
-
-$db = new \Core\FileDB(DB_FILE);
-
-$drinks = $modelDrinks->get();
-
 $form = [
     'attr' => [
-        'method' => 'POST'
+        //'action' => '', Nebūtina, jeigu action yra ''
+        'method' => 'POST',
     ],
     'fields' => [
-        'password' => [
-            'label' => 'Password',
-            'type' => 'password',
-            'extra' => [
-                'validators' => [
-                    'validate_not_empty'
-                ]
-            ]
-        ],
         'email' => [
             'label' => 'Email',
-            'type' => 'email',
+            'type' => 'text',
             'extra' => [
                 'validators' => [
                     'validate_not_empty',
-                    // 'validate_login'
+                //validate float
                 ]
-            ]
+            ],
+        ],
+        'password' => [
+            'label' => 'Password',
+            'type' => 'text',
+            'extra' => [
+                'validators' => [
+                    'validate_not_empty',
+//                    'validate_login'
+                ]
+            ],
         ],
     ],
     'buttons' => [
         'submit' => [
-            'title' => 'Submit',
+            'title' => 'Login',
+            'extra' => [
+                'attr' => [
+                    'class' => 'red-btn'
+                ]
+            ]
+        ],
+        'delete' => [
+            'title' => 'Log out',
             'extra' => [
                 'attr' => [
                     'class' => 'blue-btn'
                 ]
             ]
-        ]
+        ],
     ],
     'callbacks' => [
         'success' => 'form_success',
         'fail' => 'form_fail'
     ],
     'validators' => [
-        'validate_login'
+        'validate_login',
     ]
 ];
 
 $filtered_input = get_form_input($form);
 
-session_start();
-
 function form_success($filtered_input, &$form) {
     $_SESSION = $filtered_input;
-    $form['fields']['email']['error'] = 'Welcome';
+    $form['fields']['password']['error'] = 'Login successfull!';
 }
-// var_dump($_SESSION);
+
 function form_fail() {
-    print 'Wrong, try again';
-    // $form['fields']['email']['error'] = 'Wrong, try again';
+    print 'Login failed...';
 }
 
-
-function validate_login($filtered_input, &$form){
-    $modelUser = new App\User\Model();
-    $users = $modelUser->get ([
-        'email' => $filtered_input['email'],
-        'password' => $filtered_input['password']
-    ]);
-
-    if(empty($users)){
-        // $form['fields']['password']['error'] = 'Loggin failed!';
-        return false;
-    }
-
-    return true;
-}
-// var_dump($filtered_input['password']);
-
-// var_dump($form);
+$modelUsers = new App\Users\Model();
 
 switch (get_form_action()) {
     case 'submit':
-        validate_form($filtered_input, $form, $modelDrinks);
+        validate_form($filtered_input, $form);
         break;
     case 'delete':
-        foreach ($modelDrinks->get() as $drink) {
-            $modelDrinks->delete($drink);
+        foreach ($modelUsers->get() as $user) {
+            $modelUsers->deleteAll();
         }
 }
 
@@ -117,13 +88,15 @@ switch (get_form_action()) {
         <link rel="stylesheet" href="media/css/normalize.css">
         <link rel="stylesheet" href="media/css/style.css">
         <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
-        <link rel="icon" href="favicon.ico" type="image/x-icon">        
+        <link rel="icon" href="favicon.ico" type="image/x-icon">
         <script defer src="media/js/app.js"></script>
     </head>
     <body>
         <?php require ROOT . '/app/templates/navigation.tpl.php'; ?>
+
         <div class="content">
             <?php require ROOT . '/core/templates/form/form.tpl.php'; ?>
         </div>
+
     </body>
 </html>

@@ -5,11 +5,11 @@ namespace Core;
 class FileDB {
 
     private $file_name;
-    
-    /** @var array $data */ 
+
+    /** @var array $data */
     private $data;
 
-    public function __construct( $file_name) {
+    public function __construct($file_name) {
         $this->file_name = $file_name;
     }
 
@@ -213,7 +213,12 @@ class FileDB {
         foreach ($this->data[$table] as $row_id => $row) {
             $condition_met = true;
             foreach ($conditions as $condition_id => $condition) {
-                if ($row[$condition_id] !== $condition) {
+                if ($condition_id === 'row_id') {
+                    if ($row_id != $condition) {
+                        $condition_met = false;
+                        break;
+                    }
+                } else if ($row[$condition_id] !== $condition) {
                     $condition_met = false;
                     break;
                 }
@@ -223,11 +228,10 @@ class FileDB {
                 $rows[$row_id] = $row;
             }
         }
-
         return $rows;
     }
 
-    public function __destruct(){
+    public function __destruct() {
         $this->save();
     }
 
