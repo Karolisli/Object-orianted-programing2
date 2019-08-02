@@ -16,7 +16,9 @@ abstract class Cookie {
     /**
      * Konstruktorius paprasčiausia turi nuset'tintis $name
      */
-    abstract public function __construct(string $name);
+    abstract public function __construct(string $name){
+        $this->name;
+    }
 
     /**
      * Turi patikrinti ar cookie duotu pavadinimu
