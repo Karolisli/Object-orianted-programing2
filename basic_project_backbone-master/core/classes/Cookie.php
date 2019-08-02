@@ -22,12 +22,14 @@ class Cookie extends Abstracts\Cookie {
 
     public function read(): array {
         if ($this->exists()) {
-            $array = json_decode($_COOKIE[$this->name]);
+            $array = json_decode($_COOKIE[$this->name], true);
             if (is_array($array)) {
                 return $array;
             }
+            
             trigger_error('That is not an array', E_USER_WARNING);
         }
+        
         return [];
     }
 
