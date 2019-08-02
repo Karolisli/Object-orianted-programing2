@@ -12,7 +12,11 @@ class Cookie extends Abstracts\Cookie {
     }
 
     public function exists(): bool {
-        
+        if(isset($_COOKIE[$this->name])){
+            return true;
+        }else{
+            return false;
+        }
     }
 
     public function read(): array {
