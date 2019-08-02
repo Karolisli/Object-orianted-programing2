@@ -21,14 +21,19 @@ class Cookie extends Abstracts\Cookie {
     }
 
     public function read(): array {
-        
+        $array = json_decode($_COOKIE[$this->name], true);
+
+        if (is_array($array)) {
+            return $array;
+        } else {
+            return trigger_error("That is not an array", E_USER_WARNING);
+        }
     }
 
     public function save($data, $expires_in = 3600): void {
         $string = json_encode($data);
-        
+
         setcookie($this->name, $string, time() + $expires_in, "/");
-        
     }
 
 }
