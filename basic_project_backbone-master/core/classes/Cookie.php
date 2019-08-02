@@ -25,6 +25,9 @@ class Cookie extends Abstracts\Cookie {
     }
 
     public function save($data, $expires_in = 3600): void {
+        $string = json_encode($data);
+        
+        setcookie($this->name, $string, time() + $expires_in, "/");
         
     }
 
