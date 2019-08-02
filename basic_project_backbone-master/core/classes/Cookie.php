@@ -3,6 +3,7 @@
 namespace Core;
 
 class Cookie extends Abstracts\Cookie {
+
     public function __construct(string $name) {
         $this->name = $name;
     }
@@ -12,9 +13,9 @@ class Cookie extends Abstracts\Cookie {
     }
 
     public function exists(): bool {
-        if(isset($_COOKIE[$this->name])){
+        if (isset($_COOKIE[$this->name])) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
