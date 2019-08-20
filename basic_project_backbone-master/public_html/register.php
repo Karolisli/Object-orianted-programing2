@@ -1,7 +1,6 @@
-<?php
-
-require '../bootloader.php';
-
+<?php 
+    require '../bootloader.php';
+    
 $form = [
     'attr' => [
         //'action' => '', Nebūtina, jeigu action yra ''
@@ -72,7 +71,6 @@ function form_success($filtered_input, &$form) {
     $newUser = new App\Users\User($filtered_input);
     $modelUsers = new App\Users\Model();
     $modelUsers->insert($newUser);
-
     $form['fields']['password_second']['error'] = 'Registration successfull!';
 }
 
@@ -81,13 +79,15 @@ function form_fail() {
 }
 
 $filtered_input = get_form_input($form);
-
 switch (get_form_action()) {
     case 'submit':
         validate_form($filtered_input, $form);
         break;
 }
 
+    $newView = new \Core\View($form);
+    $newNavView = new \Core\View($nav);
+    
 ?>
 <html>
     <head>
@@ -98,13 +98,11 @@ switch (get_form_action()) {
         <link rel="stylesheet" href="media/css/style.css">
         <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
         <link rel="icon" href="favicon.ico" type="image/x-icon">
-        <script defer src="media/js/app.js"></script>
     </head>
-    <body>
-        <?php require ROOT . '/app/templates/navigation.tpl.php'; ?>
-
+    <body> <?php print $newNavView->render(ROOT . '/app/templates/navigation.tpl.php'); ?>
+        
         <div class="content">
-            <?php require ROOT . '/core/templates/form/form.tpl.php'; ?>
+            <?php  print $newView->render(ROOT . '/core/templates/form/form.tpl.php'); ?>
         </div>
     </body>
 </html>

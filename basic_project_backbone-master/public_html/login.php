@@ -79,6 +79,9 @@ switch (get_form_action()) {
         }
 }
 
+    $newView = new \Core\View($form);
+    $newNavView = new \Core\View($nav);
+
 ?>
 <html>
     <head>
@@ -92,10 +95,10 @@ switch (get_form_action()) {
         <script defer src="media/js/app.js"></script>
     </head>
     <body>
-        <?php require ROOT . '/app/templates/navigation.tpl.php'; ?>
+        <?php print $newNavView->render(ROOT . '/app/templates/navigation.tpl.php'); ?>
 
         <div class="content">
-            <?php require ROOT . '/core/templates/form/form.tpl.php'; ?>
+            <?php print $newView->render(ROOT . '/core/templates/form/form.tpl.php'); ?>
         </div>
 
     </body>
