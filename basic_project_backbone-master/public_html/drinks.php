@@ -21,7 +21,7 @@ function insert_drinks() {
     ]);
 
     $drinksModel->insert($beer);
-    $drinksModel->insert($schnaps);    
+    $drinksModel->insert($schnaps);
 }
 
 function get_form() {
@@ -102,7 +102,6 @@ switch (get_form_action()) {
 
 $modelDrinks = new App\Drinks\Model();
 $drinks = $modelDrinks->get();
-
 ?>
 <html>
     <head>
@@ -120,7 +119,7 @@ $drinks = $modelDrinks->get();
 
         <div class="content">
             <h1 class="vakaro-meniu">Vakaro MENIU</h1>
-            
+
             <?php require ROOT . '/core/templates/form/form.tpl.php'; ?> 
 
             <div class="gerimai">  
@@ -134,5 +133,65 @@ $drinks = $modelDrinks->get();
                 <?php endforeach; ?>
             </div>
         </div>
+        <script>
+            'use strict';
+
+            // Funkcija registruojanti form'os submit'o listenerį
+            function addListener() {
+                // Paselect'inam form'ą, kurios ID yra drinks-form
+                document.getElementById("drinks-form")
+                        // uždedam jai event'o listenerį, kuris suveiks ją submitinus
+                        .addEventListener("submit", e => {
+
+                            // default'inė event'o f-ija, kuri užkerta (preventina)
+                            // puslapio perkrovimą submit'inus formą
+                            e.preventDefault();
+
+                            // Sukuriam default'ini objektą FormData
+                            // Tai yra "tuščia dėžė", kurią nusiųsime
+                            // duomenis POST metodu. Į ją append'inam duomenis
+                            let formData = new FormData();
+
+                            // Paduodame paspausto mygtuko duomenis 
+                            formData.append('action', 'submit');
+                            // Kadangi tik po paspaudimo žinome, kokį gėrimą pasirinko
+                            // useris, appendiname select'o su name "gerimas" value:
+                            formData.append('gerimas', e.target.gerimas.value); // itraukiam gerimas:gerimo_id
+
+                            // Fetch'as paima duomenis iš tam tikro URL'o
+                            fetch("./drinks.php", {
+                                // Prieš gaunant duomenis, mes galime juos išsiųsti
+                                // tam tikru metodu. Šiuo atveju naudojame POST              
+                                method: "POST",
+                                // Tai yra duomenys, kuriuos nusiunčiame į drinks.php
+                                // Naudojame formData dėl to, kad PHP tinkamai atpažintų
+                                // duomenis ir juos sudėtų į $_POST masyvą
+                                body: formData
+                            })
+                                    // Gavus atsaką iš drinks.php, iškviečiama ši funkcija
+                                    .then(response => {
+                                        // Norėdami gauti tekstą (HTML) iš atsako,
+                                        // naudojame šį kodą  
+                                        response.text().then(text => {
+                                            console.log("done");
+                                            // Kadangi atsako tekstas yra visas puslapio HTML
+                                            // mes esamą HTML'ą perrašome su gautu (text)
+                                            document.querySelector("html").innerHTML = text;
+
+                                            // Kadangi perrašius HTML'ą nusimuša visi event'ų 
+                                            // listeneriai, reikia iš naujo užregistruoti
+                                            addListener();
+                                        });
+                                    })
+                                    .catch(e => {
+                                        // Nes eik nx
+                                        console.log(e);
+                                    });
+                        });
+            }
+            
+            // Pirmo užkrovimo metu, registruojame listenerį formai
+            addListener();
+        </script>
     </body>
 </html>
