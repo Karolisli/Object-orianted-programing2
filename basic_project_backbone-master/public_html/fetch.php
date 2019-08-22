@@ -50,11 +50,29 @@
                             response.json().then(obj => {
                                 // ŠITAS OBJ yra javascriptinis objektas
                                 // (išdecodintas jsonas)
-                                console.log(obj);
+                                console.log(obj.data.forEach(v => {
+                                    DisplayBeer(v);
+                                }));
                             });
                         })
                         .catch(e => console.log(e.message));
             });
+
+            function DisplayBeer(value) {
+                const drinksDiv = document.getElementById("drinks-container");
+                drinksDiv.innerHTML = "";
+
+                const h3_name = document.createElement("h3");
+                const h3_amount= document.createElement("h3");
+                const h3_abarot = document.createElement("h3");
+                const image = document.createElement("img");
+
+                image.src = value.image;
+                h3_name.innerHTML = value.name;
+                h3_abarot.innerHTML = value.abarot;
+                h3_amount.innerHTML = value.amount_ml;
+                drinksDiv.append(h3_name, h3_abarot, h3_amount, image);
+            }
         </script>
     </body>
 </html>
