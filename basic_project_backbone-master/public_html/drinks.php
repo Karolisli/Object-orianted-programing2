@@ -105,7 +105,8 @@ $drinks = $modelDrinks->get();
 
 $newRegisterObject = new Core\View($form);
 $newNavRegisterObject = new Core\View($nav);
-
+       
+var_dump($_SESSION);
 ?>
 <html>
     <head>
@@ -129,7 +130,9 @@ $newNavRegisterObject = new Core\View($nav);
             <div class="gerimai">  
                 <?php foreach ($drinks as $drink): ?>
                     <div class="gerimas">
-                        <button class="deleteButton" data-id="<?php print $drink->getId(); ?>>">Delete</button>
+                        <?php if($_SESSION): ?>
+                            <button class="deleteButton" data-id="<?php print $drink->getId(); ?>">Delete</button>
+                        <?php endif; ?>
                         <h1><?php print $drink->getName(); ?></h1>
                         <h1><?php print $drink->getAmount(); ?>ml</h1>
                         <h1><?php print $drink->getAbarot(); ?>%</h1>
@@ -190,7 +193,6 @@ $newNavRegisterObject = new Core\View($nav);
     }
     // Pirmo užkrovimo metu, registruojame listenerį formai
     addListener();
-    
     
     
     const delUrl = "/api/drinks/delete.php";
