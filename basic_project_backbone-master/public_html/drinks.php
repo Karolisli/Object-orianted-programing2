@@ -129,6 +129,7 @@ $newNavRegisterObject = new Core\View($nav);
             <div class="gerimai">  
                 <?php foreach ($drinks as $drink): ?>
                     <div class="gerimas">
+                        <button class="deleteButton" data-id="<?php print $drink->getId(); ?>>">Delete</button>
                         <h1><?php print $drink->getName(); ?></h1>
                         <h1><?php print $drink->getAmount(); ?>ml</h1>
                         <h1><?php print $drink->getAbarot(); ?>%</h1>
@@ -189,6 +190,34 @@ $newNavRegisterObject = new Core\View($nav);
     }
     // Pirmo užkrovimo metu, registruojame listenerį formai
     addListener();
+    
+    
+    
+    const delUrl = "/api/drinks/delete.php";
+    const delButton = document.querySelectorAll(".deleteButton");
+
+    delButton.forEach(function (button){
+        button.addEventListener("click", e => { 
+            let buttonEl = e.target;
+            
+            const dataId = buttonEl.getAttribute('data-id');            
+          
+            let formData = new FormData();
+            formData.append('id',dataId);
+
+            fetch(delUrl,{
+                method: "POST",
+                body: formData
+            })
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log(data);
+                            buttonEl.parentNode.remove();
+                        })
+                        .catch(e => console.log(e.message));
+        });
+    });
+
 </script>
     </body>
 </html>
