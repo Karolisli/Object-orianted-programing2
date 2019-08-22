@@ -20,7 +20,8 @@ $app = new App\App();
 $nav = [
     'left' => [
         ['url' => '/index.php', 'title' => 'Home'],
-        ['url' => '/drinks.php', 'title' => 'Nacnykas'],        
+        ['url' => '/drinks.php', 'title' => 'Nacnykas'],
+        ['url' => '/fetch_create.php', 'title' => 'Make a drink'],        
         ['url' => '/register.php', 'title' => 'Register'],
         ['url' => '/login.php', 'title' => 'Login'],
         ['url' => '/logout.php', 'title' => 'Logout'],
