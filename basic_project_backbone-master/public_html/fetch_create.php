@@ -1,7 +1,13 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>title</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>fetch_create</title>
+        <link rel="stylesheet" href="media/css/normalize.css">
+        <link rel="stylesheet" href="media/css/milligram.min.css">
+        <link rel="stylesheet" href="media/css/style.css">
+        <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+        <link rel="icon" href="favicon.ico" type="image/x-icon">
     </head>
     <body>
         <form id="create-form">
