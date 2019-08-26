@@ -21,7 +21,8 @@ $nav = [
     'left' => [
         ['url' => '/index.php', 'title' => 'Home'],
         ['url' => '/drinks.php', 'title' => 'Nacnykas'],
-        ['url' => '/fetch_create.php', 'title' => 'Make a drink'],        
+        ['url' => '/fetch_create.php', 'title' => 'Make a drink'],
+        ['url' => '/fetch_update.php', 'title' => 'Update a drink'],        
         ['url' => '/register.php', 'title' => 'Register'],
         ['url' => '/login.php', 'title' => 'Login'],
         ['url' => '/logout.php', 'title' => 'Logout'],
