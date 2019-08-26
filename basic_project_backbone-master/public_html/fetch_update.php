@@ -1,15 +1,16 @@
 <?php
 require '../bootloader.php';
 
-function get_form() {
-    return [
-        'attr' => [
-            //'action' => '', Neb?tina, jeigu action yra ''
-            'method' => 'POST',
-        ],
+
+$update_form = [
+    'attr' => [
+        //'action' => '', Neb?tina, jeigu action yra ''
+        'method' => 'POST',
+        'id' => 'drinks-form',
+    ],
     'fields' => [
         'name' => [
-            'label' => 'Name',
+            'label' => 'Drink',
             'type' => 'text',
             'extra' => [
                 'validators' => [
@@ -43,67 +44,33 @@ function get_form() {
                     'validate_not_empty'
                 ]
             ],
-        ], 
-    ],
-        'callbacks' => [
-            'success' => 'form_success',
-            'fail' => 'form_fail'
         ],
-        'validators' => [
-        ]
-    ];
-}
+    ],
+    'buttons' => [
+        'submit' => [
+            'title' => 'Update',
+            'extra' => [
+                'attr' => [
+                    'class' => 'red-btn'
+                ]
+            ]
+        ],
+    ],
+    'callbacks' => [
+        'success' => 'form_success',
+        'fail' => 'form_fail'
+    ],
+    'validators' => [
+    ]
+];
 
-function get_options() {
-    $drinksModel = new App\Drinks\Model();
-    $drinks = $drinksModel->get();
-    $options = [];
-
-    foreach ($drinks as $drink_id => $drink) {
-
-        $options[$drink->getId()] = $drink->getName();
-    }
-    return $options;
-}
-
-function form_success($filtered_input, &$form) {
-
-    $drink_id = $filtered_input['gerimas'];
-
-    $modelDrinks = new App\Drinks\Model();
-    $drinks = $modelDrinks->get(['row_id' => $drink_id]);
-
-    /** @var \App\Drinks\Drink Description * */
-    $drink = $drinks[0];
-    $drink->drink();
-
-    if ($drink->getAmount() > 0) {
-        $modelDrinks->update($drink);
-    } else {
-        $modelDrinks->delete($drink);
-        $form['fields']['gerimas']['options'] = get_options();
-    }
-}
-
-function form_fail() {
-    print 'fail';
-}
-
-$form = get_form();
-$filtered_input = get_form_input($form);
-
-switch (get_form_action()) {
-    case 'submit':
-        validate_form($filtered_input, $form);
-        break;
-}
+$form = $update_form;
 
 $modelDrinks = new App\Drinks\Model();
 $drinks = $modelDrinks->get();
 
 $newRegisterObject = new Core\View($form);
 $newNavRegisterObject = new Core\View($nav);
-       
 ?>
 <html>
     <head>
@@ -121,77 +88,127 @@ $newNavRegisterObject = new Core\View($nav);
 
         <div class="content">
             <h1 class="vakaro-meniu">Vakaro MENIU</h1>
-            
-            <?php print $newRegisterObject->render(ROOT . '/core/templates/form/form.tpl.php'); ?> 
+            <div id="myModal" class="modal">
+                <div class="modal-content">
+                    <span class="close"><!--&times;--></span>
+                    <?php print $newRegisterObject->render(ROOT . '/core/templates/form/form.tpl.php'); ?> 
+                </div>
+            </div>
 
             <div class="gerimai">  
                 <?php foreach ($drinks as $drink): ?>
                     <div class="gerimas">
-                        <?php if($_SESSION): ?>
-                            <button class="updateButton" data-id="<?php print $drink->getId(); ?>">Update</button>
+                        <?php if ($_SESSION): ?>
+                            <button class="updateButton" data-id="<?php print $drink->getId(); ?>">Select</button>
                         <?php endif; ?>
-                        <h1><?php print $drink->getName(); ?></h1>
-                        <h1><?php print $drink->getAmount(); ?>ml</h1>
-                        <h1><?php print $drink->getAbarot(); ?>%</h1>
+                        <h1 class="beername"><?php print $drink->getName(); ?></h1>
+                        <h1 class="beeramount"><?php print $drink->getAmount(); ?>ml</h1>
+                        <h1 class="beerabarot"><?php print $drink->getAbarot(); ?>%</h1>
                         <img src="<?php print $drink->getImage(); ?>">
                     </div>
                 <?php endforeach; ?>
             </div>
         </div>
-    <script>
-        document.getElementById("drinks-form").style.display = 'none';
+        <script>
 
-        const buttonUpdate = document.querySelectorAll(".updateButton");
-        const updateUrl = "api/drinks/update.php";
+            var modal = document.getElementById("myModal");
 
-        buttonUpdate.forEach(function (selectedButton) {
-            //                       console.log(selectedButton.getAttribute("data-id")); 
-            selectedButton.addEventListener("click", e => {
-                e.preventDefault();
-                
-                document.getElementById("drinks-form").style.display = 'block';
-                
-                const drinkId = e.target.getAttribute('data-id');
-                const updatedName = document.querySelector("input[name='name']").value;
-                const updatedAmount = document.querySelector("input[name='amount_ml']").value;
-                const updatedAbarot = document.querySelector("input[name='abarot']").value;
-                const updatedLink = document.querySelector("input[name='image']").value;
-
-               const conditions = {
-                    id: drinkId,
-                    name: updatedName,
-                    amount_ml: updatedAmount,
-                    abarot: updatedAbarot,
-                    image: updatedLink
+            var btn = document.querySelectorAll(".updateButton");
+            btn.forEach(function (selected) {
+                selected.onclick = function () {
+                    modal.style.display = "block";
                 };
-
-                 const jsonCond = JSON.stringify(conditions);
-
-                // Dabar jau jsonCond yra stringas, todėl galima
-                // appendinti į formData
-                let formData = new FormData();
-                formData.append('conditions', jsonCond);
-
-                fetch(updateUrl, {
-                    method: "POST",
-                    body: formData
-                })
-                        .then(response => response.json())
-                        .then(obj => {
-                            if (obj.status == 'success') {
-//                                        console.log(obj.data.name);
-                        updatedName = obj.data.name;
-                        updatedAmount = obj.data.amount;
-                        updatedAbarot = obj.data.abarot;
-                        updatedLink = obj.data.link;
-                            } else {
-                                console.log("nepavyko");
-                            }
-                            console.log(obj);
-                        })
-                        .catch(e => console.log(e.message));
             });
-        });
-    </script>
+            // Get the <span> element that closes the modal
+            var span = document.getElementsByClassName("close")[0];
+            // When the user clicks on <span> (x), close the modal
+            span.onclick = function () {
+                modal.style.display = "none";
+            };
+            // When the user clicks anywhere outside of the modal, close it
+            window.onclick = function (event) {
+                if (event.target == modal) {
+                    modal.style.display = "none";
+                }
+            };
+            //        document.getElementById("drinks-form").style.display = 'none';
+
+            const buttonUpdate = document.querySelectorAll(".updateButton");
+            const updateUrl = "api/drinks/update.php";
+            const getById = "api/drinks/get_by_id.php";
+
+            buttonUpdate.forEach(function (selectedButton) {
+                selectedButton.addEventListener("click", e => {
+                    e.preventDefault();
+                    //                document.getElementById("drinks-form").style.display = 'block';
+
+                    const drinkId = e.target.getAttribute('data-id');
+                    let formValue = new FormData();
+                    formValue.append('id', drinkId);
+                    fetch(getById, {
+                        method: "POST",
+                        body: formValue
+                    })
+                            .then(response => {
+                                response.json()
+                                        .then(obj => {
+                                            if (obj.status == 'success') {
+//                                                console.log(obj.data);
+                                                showUpdateForm(obj.data);
+                                            } else {
+                                                console.log("nepavyko buttonupdate");
+                                            }
+                                            console.log(obj);
+                                        });
+                                //                .catch(e => console.log(e.message));
+                            });
+
+                });
+            });
+            
+            function showUpdateForm(data) {
+//                console.log(data.name);
+                let updateForm = document.querySelector("#drinks-form");
+//                console.log(updateForm);
+                updateForm.name.value = data.name;
+                updateForm.amount_ml.value = data.amount_ml;
+                updateForm.abarot.value = data.abarot;
+                updateForm.image.value = data.image;
+                
+                updateForm.addEventListener('submit', e => {
+                    e.preventDefault();
+                    let formData = new FormData(e.target);
+                    formData.append('id', data.id);
+                    fetch(updateUrl, {
+                        method: "POST",
+                        body: formData
+                    })
+                            .then(response => response.json())
+                            .then(obj => {
+                                if (obj.status == 'success') {
+                                    updateDrinkInList(obj.data);
+                                    modal.style.display = "none";
+                                } else {
+                                    console.log("nepavyko showUpdateForm");
+                                }
+                                console.log(obj);
+                            })
+//                            .catch(e => console.log(e.message));
+                });
+            }
+
+            function updateDrinkInList(data) {
+
+                const updatingDrinkDiv = document.querySelector('*[data-id="' + data.id + '"]');
+//                console.log(updatingDrinkDiv);
+                const mainDiv = updatingDrinkDiv.parentNode;
+                const drinkH1 = mainDiv.querySelector(".beername");
+                drinkH1.innerHTML = data.name;
+                const drinkH2 = mainDiv.querySelector(".beeramount");
+                drinkH2.innerHTML = data.amount_ml;
+                mainDiv.querySelector(".beerabarot").innerHTML = data.abarot+"%";
+                mainDiv.querySelector("img").src = data.image;
+            }
+        </script>
     </body>
 </html>
