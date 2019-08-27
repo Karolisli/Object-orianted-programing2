@@ -64,13 +64,11 @@ $update_form = [
     ]
 ];
 
-$form = $update_form;
-
 $modelDrinks = new App\Drinks\Model();
 $drinks = $modelDrinks->get();
 
-$newRegisterObject = new Core\View($form);
-$newNavRegisterObject = new Core\View($nav);
+$newUpdateObject = new Core\View($update_form);
+$newNavUpdateObject = new Core\View($nav);
 ?>
 <html>
     <head>
@@ -84,14 +82,14 @@ $newNavRegisterObject = new Core\View($nav);
         <script defer src="media/js/app.js"></script>
     </head>
     <body>
-        <?php print $newNavRegisterObject->render(ROOT . '/app/templates/navigation.tpl.php'); ?>
+        <?php print $newNavUpdateObject->render(ROOT . '/app/templates/navigation.tpl.php'); ?>
 
         <div class="content">
             <h1 class="vakaro-meniu">Vakaro MENIU</h1>
             <div id="myModal" class="modal">
                 <div class="modal-content">
                     <span class="close"><!--&times;--></span>
-                    <?php print $newRegisterObject->render(ROOT . '/core/templates/form/form.tpl.php'); ?> 
+                    <?php print $newUpdateObject->render(ROOT . '/core/templates/form/form.tpl.php'); ?> 
                 </div>
             </div>
 
@@ -174,7 +172,7 @@ $newNavRegisterObject = new Core\View($nav);
                 updateForm.amount_ml.value = data.amount_ml;
                 updateForm.abarot.value = data.abarot;
                 updateForm.image.value = data.image;
-                
+                console.log(updateForm);
                 updateForm.addEventListener('submit', e => {
                     e.preventDefault();
                     let formData = new FormData(e.target);
@@ -205,7 +203,7 @@ $newNavRegisterObject = new Core\View($nav);
                 const drinkH1 = mainDiv.querySelector(".beername");
                 drinkH1.innerHTML = data.name;
                 const drinkH2 = mainDiv.querySelector(".beeramount");
-                drinkH2.innerHTML = data.amount_ml;
+                drinkH2.innerHTML = data.amount_ml + "ml";
                 mainDiv.querySelector(".beerabarot").innerHTML = data.abarot+"%";
                 mainDiv.querySelector("img").src = data.image;
             }
