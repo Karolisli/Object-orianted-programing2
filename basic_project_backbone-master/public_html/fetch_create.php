@@ -1,3 +1,12 @@
+<?php
+require '../bootloader.php';
+
+$modelDrinks = new App\Drinks\Model();
+$drinks = $modelDrinks->get();
+
+$newNavObject = new Core\View($nav);
+?>
+
 <html>
     <head>
         <meta charset="UTF-8">
@@ -10,6 +19,8 @@
         <link rel="icon" href="favicon.ico" type="image/x-icon">
     </head>
     <body>
+        <?php print $newNavObject->render(ROOT . '/app/templates/navigation.tpl.php'); ?>
+        <?php if ($_SESSION): ?>
         <form id="create-form">
             <div>
                 <input type="text"  name="name" placeholder="Type your drink name">
@@ -28,6 +39,7 @@
         <div id="drinks-container">
 ​
         </div>
+        <?php endif; ?>
     <script>
         const endpointUrl = "api/drinks/create.php";
         const drinksDiv = document.getElementById("drinks-container");
