@@ -21,7 +21,7 @@ function insert_drinks() {
     ]);
 
     $drinksModel->insert($beer);
-    $drinksModel->insert($schnaps);    
+    $drinksModel->insert($schnaps);
 }
 
 function get_form() {
@@ -56,6 +56,68 @@ function get_form() {
         ]
     ];
 }
+
+$update_form = [
+    'attr' => [
+        //'action' => '', Neb?tina, jeigu action yra ''
+        'method' => 'POST',
+        'id' => 'update-form',
+    ],
+    'fields' => [
+        'name' => [
+            'label' => 'Drink',
+            'type' => 'text',
+            'extra' => [
+                'validators' => [
+                    'validate_not_empty',
+                ]
+            ],
+        ],
+        'amount_ml' => [
+            'label' => 'Amount ml',
+            'type' => 'number',
+            'extra' => [
+                'validators' => [
+                    'validate_not_empty',
+                ]
+            ],
+        ],
+        'abarot' => [
+            'label' => 'Abarot',
+            'type' => 'number',
+            'extra' => [
+                'validators' => [
+                    'validate_not_empty'
+                ]
+            ],
+        ],
+        'image' => [
+            'label' => 'Image',
+            'type' => 'text',
+            'extra' => [
+                'validators' => [
+                    'validate_not_empty'
+                ]
+            ],
+        ],
+    ],
+    'buttons' => [
+        'submit' => [
+            'title' => 'Update',
+            'extra' => [
+                'attr' => [
+                    'class' => 'red-btn'
+                ]
+            ]
+        ],
+    ],
+    'callbacks' => [
+        'success' => 'form_success',
+        'fail' => 'form_fail'
+    ],
+    'validators' => [
+    ]
+];
 
 function get_options() {
     $drinksModel = new App\Drinks\Model();
@@ -104,9 +166,10 @@ switch (get_form_action()) {
 $modelDrinks = new App\Drinks\Model();
 $drinks = $modelDrinks->get();
 
+$newUpdateObject = new Core\View($update_form);
 $newRegisterObject = new Core\View($form);
 $newNavRegisterObject = new Core\View($nav);
-       
+
 var_dump($_SESSION);
 ?>
 <html>
@@ -126,101 +189,207 @@ var_dump($_SESSION);
         <div class="content">
             <h1 class="vakaro-meniu">Vakaro MENIU</h1>
             
-            <?php print $newRegisterObject->render(ROOT . '/core/templates/form/form.tpl.php'); ?> 
-
+            <?php if ($_SESSION): ?>
+                <?php print $newRegisterObject->render(ROOT . '/core/templates/form/form.tpl.php'); ?> 
+            <?php endif; ?>
+            
             <div class="gerimai">  
                 <?php foreach ($drinks as $drink): ?>
                     <div class="gerimas">
-                        <?php if($_SESSION): ?>
+                        
+                        <?php if ($_SESSION['email'] ?? false == "Admin@gmail.com"): ?>
                             <button class="deleteButton" data-id="<?php print $drink->getId(); ?>">Delete</button>
+                            <button class="updateButton" data-id="<?php print $drink->getId(); ?>">Select</button>
                         <?php endif; ?>
-                        <h1><?php print $drink->getName(); ?></h1>
-                        <h1><?php print $drink->getAmount(); ?>ml</h1>
-                        <h1><?php print $drink->getAbarot(); ?>%</h1>
+                            
+                        <h1 class="beername"><?php print $drink->getName(); ?></h1>
+                        <h1 class="beeramount"><?php print $drink->getAmount(); ?>ml</h1>
+                        <h1 class="beerabarot"><?php print $drink->getAbarot(); ?>%</h1>
                         <img src="<?php print $drink->getImage(); ?>">
                     </div>
                 <?php endforeach; ?>
             </div>
+            <div id="myModal" class="modal">
+                <div class="modal-content">
+                    <span class="close"><!--&times;--></span>
+                    <?php print $newUpdateObject->render(ROOT . '/core/templates/form/form.tpl.php'); ?> 
+                </div>
+            </div>
         </div>
-<script>
-    'use strict';
-    // Funkcija registruojanti form'os submit'o listenerį
-    function addListener() {
-        // Paselect'inam form'ą, kurios ID yra drinks-form
-        document.getElementById("drinks-form")
-        // uždedam jai event'o listenerį, kuris suveiks ją submitinus
-            .addEventListener("submit", e => {
-                // default'inė event'o f-ija, kuri užkerta (preventina)
-                // puslapio perkrovimą submit'inus formą
-                e.preventDefault();
-                // Sukuriam default'ini objektą FormData
-                // Tai yra "tuščia dėžė", kurią nusiųsime
-                // duomenis POST metodu. Į ją append'inam duomenis
-                let formData = new FormData();
-                // Paduodame paspausto mygtuko duomenis
-                formData.append('action', 'submit');
-                // Kadangi tik po paspaudimo žinome, kokį gėrimą pasirinko
-                // useris, appendiname select'o su name "gerimas" value:
-                formData.append('gerimas', e.target.gerimas.value); // itraukiam gerimas:gerimo_id
-                // Fetch'as paima duomenis iš tam tikro URL'o
-                fetch("./drinks.php", {
-                    // Prieš gaunant duomenis, mes galime juos išsiųsti
-                    // tam tikru metodu. Šiuo atveju naudojame POST
-                    method: "POST",
-                    // Tai yra duomenys, kuriuos nusiunčiame į drinks.php
-                    // Naudojame formData dėl to, kad PHP tinkamai atpažintų
-                    // duomenis ir juos sudėtų į $_POST masyvą
-                    body: formData
-                })
-                // Gavus atsaką iš drinks.php, iškviečiama ši funkcija
-                    .then(response => {
-                        // Norėdami gauti tekstą (HTML) iš atsako,
-                        // naudojame šį kodą
-                        response.text().then(text => {
-                            console.log("done");
-                            // Kadangi atsako tekstas yra visas puslapio HTML
-                            // mes esamą HTML'ą perrašome su gautu (text)
-                            document.querySelector("html").innerHTML = text;
-                            // Kadangi perrašius HTML'ą nusimuša visi event'ų
-                            // listeneriai, reikia iš naujo užregistruoti
-                            addListener();
+
+
+        <script>
+            'use strict';
+            // Funkcija registruojanti form'os submit'o listenerį
+            function addListener() {
+                // Paselect'inam form'ą, kurios ID yra drinks-form
+                document.getElementById("drinks-form")
+                        // uždedam jai event'o listenerį, kuris suveiks ją submitinus
+                        .addEventListener("submit", e => {
+                            // default'inė event'o f-ija, kuri užkerta (preventina)
+                            // puslapio perkrovimą submit'inus formą
+                            e.preventDefault();
+                            // Sukuriam default'ini objektą FormData
+                            // Tai yra "tuščia dėžė", kurią nusiųsime
+                            // duomenis POST metodu. Į ją append'inam duomenis
+                            let formData = new FormData();
+                            // Paduodame paspausto mygtuko duomenis
+                            formData.append('action', 'submit');
+                            // Kadangi tik po paspaudimo žinome, kokį gėrimą pasirinko
+                            // useris, appendiname select'o su name "gerimas" value:
+                            formData.append('gerimas', e.target.gerimas.value); // itraukiam gerimas:gerimo_id
+                            // Fetch'as paima duomenis iš tam tikro URL'o
+                            fetch("./drinks.php", {
+                                // Prieš gaunant duomenis, mes galime juos išsiųsti
+                                // tam tikru metodu. Šiuo atveju naudojame POST
+                                method: "POST",
+                                // Tai yra duomenys, kuriuos nusiunčiame į drinks.php
+                                // Naudojame formData dėl to, kad PHP tinkamai atpažintų
+                                // duomenis ir juos sudėtų į $_POST masyvą
+                                body: formData
+                            })
+                                    // Gavus atsaką iš drinks.php, iškviečiama ši funkcija
+                                    .then(response => {
+                                        // Norėdami gauti tekstą (HTML) iš atsako,
+                                        // naudojame šį kodą
+                                        response.text().then(text => {
+                                            console.log("done");
+                                            // Kadangi atsako tekstas yra visas puslapio HTML
+                                            // mes esamą HTML'ą perrašome su gautu (text)
+                                            document.querySelector("html").innerHTML = text;
+                                            // Kadangi perrašius HTML'ą nusimuša visi event'ų
+                                            // listeneriai, reikia iš naujo užregistruoti
+                                            addListener();
+                                        });
+                                    })
+                                    .catch(e => {
+                                        // Nes eik nx
+                                        console.log(e);
+                                    });
                         });
+            }
+            // Pirmo užkrovimo metu, registruojame listenerį formai
+            addListener();
+
+
+            const delUrl = "/api/drinks/delete.php";
+            const delButton = document.querySelectorAll(".deleteButton");
+
+            delButton.forEach(function (button) {
+                button.addEventListener("click", e => {
+                    let buttonEl = e.target;
+
+                    const dataId = buttonEl.getAttribute('data-id');
+
+                    let formData = new FormData();
+                    formData.append('id', dataId);
+
+                    fetch(delUrl, {
+                        method: "POST",
+                        body: formData
                     })
-                    .catch(e => {
-                        // Nes eik nx
-                        console.log(e);
-                    });
+                            .then(response => response.json())
+                            .then(data => {
+                                console.log(data);
+                                buttonEl.parentNode.remove();
+                            })
+                            .catch(e => console.log(e.message));
+                });
             });
-    }
-    // Pirmo užkrovimo metu, registruojame listenerį formai
-    addListener();
-    
-    
-    const delUrl = "/api/drinks/delete.php";
-    const delButton = document.querySelectorAll(".deleteButton");
 
-    delButton.forEach(function (button){
-        button.addEventListener("click", e => { 
-            let buttonEl = e.target;
-            
-            const dataId = buttonEl.getAttribute('data-id');            
-          
-            let formData = new FormData();
-            formData.append('id',dataId);
+            var modal = document.getElementById("myModal");
 
-            fetch(delUrl,{
-                method: "POST",
-                body: formData
-            })
-                        .then(response => response.json())
-                        .then(data => {
-                            console.log(data);
-                            buttonEl.parentNode.remove();
-                        })
-                        .catch(e => console.log(e.message));
-        });
-    });
+            var btn = document.querySelectorAll(".updateButton");
+            btn.forEach(function (selected) {
+                selected.onclick = function () {
+                    modal.style.display = "block";
+                };
+            });
+            // Get the <span> element that closes the modal
+            var span = document.getElementsByClassName("close")[0];
+            // When the user clicks on <span> (x), close the modal
+            span.onclick = function () {
+                modal.style.display = "none";
+            };
+            // When the user clicks anywhere outside of the modal, close it
+            window.onclick = function (event) {
+                if (event.target == modal) {
+                    modal.style.display = "none";
+                }
+            };
 
-</script>
+            const buttonUpdate = document.querySelectorAll(".updateButton");
+            const updateUrl = "api/drinks/update.php";
+            const getById = "api/drinks/get_by_id.php";
+
+            buttonUpdate.forEach(function (selectedButton) {
+                selectedButton.addEventListener("click", e => {
+                    e.preventDefault();
+
+                    const drinkId = e.target.getAttribute('data-id');
+                    let formValue = new FormData();
+                    formValue.append('id', drinkId);
+                    fetch(getById, {
+                        method: "POST",
+                        body: formValue
+                    })
+                            .then(response => {
+                                response.json()
+                                        .then(obj => {
+                                            if (obj.status == 'success') {
+                                                showUpdateForm(obj.data);
+                                            } else {
+                                                console.log("nepavyko buttonupdate");
+                                            }
+//                                            console.log(obj);
+                                        })
+                                        .catch(e => console.log(e.message));
+                            });
+
+                });
+            });
+
+            function showUpdateForm(data) {
+                let updateForm = document.querySelector("#update-form");
+
+                updateForm.name.value = data.name;
+                updateForm.amount_ml.value = data.amount_ml;
+                updateForm.abarot.value = data.abarot;
+                updateForm.image.value = data.image;
+
+                updateForm.addEventListener('submit', e => {
+                    e.preventDefault();
+                    let formData = new FormData(e.target);
+                    formData.append('id', data.id);
+                    fetch(updateUrl, {
+                        method: "POST",
+                        body: formData
+                    })
+                            .then(response => response.json())
+                            .then(obj => {
+                                if (obj.status == 'success') {
+                                    updateDrinkInList(obj.data);
+                                    modal.style.display = "none";
+                                } else {
+                                    console.log("nepavyko showUpdateForm");
+                                }
+                                console.log(obj);
+                            })
+                            .catch(e => console.log(e.message));
+                });
+            }
+
+            function updateDrinkInList(data) {
+                const updatingDrinkDiv = document.querySelector('*[data-id="' + data.id + '"]');
+                const mainDiv = updatingDrinkDiv.parentNode;
+                const drinkH1 = mainDiv.querySelector(".beername");
+                drinkH1.innerHTML = data.name;
+                const drinkH2 = mainDiv.querySelector(".beeramount");
+                drinkH2.innerHTML = data.amount_ml + "ml";
+                mainDiv.querySelector(".beerabarot").innerHTML = data.abarot + "%";
+                mainDiv.querySelector("img").src = data.image;
+            }
+
+        </script>
     </body>
 </html>
